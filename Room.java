@@ -20,13 +20,14 @@ public class Room {
     private boolean researved = false;
 
     Room(int type, Player player){
+        this.event = new Event(type, player, id);
+
         setType(type);
 
         this.id = UUID.randomUUID().toString();
         if(type == 1){
             Main.safes.add(new Safe(id));
         }
-        this.event = new Event(type, player, id);
     }
 
     public int getType() {
@@ -43,6 +44,7 @@ public class Room {
 
     public void setType(int type) {
         this.type = type;
+        this.event.setType(type);
 
         if(type == 0 || type == 7) {
             name = "Wand";
