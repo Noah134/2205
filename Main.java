@@ -345,7 +345,9 @@ public class Main {
                 }
             } else {
                 System.out.println("Das habe ich nicht verstanden..");
+                continue;
             }
+            
             player.setOxygen(player.getOxygen() - 10);
             rooms[player.getPos_x()][player.getPos_y()].getEvent().execute();
         }
