@@ -203,12 +203,41 @@ public class Main {
                 }
             }
 
-            bRunning = recrusiveWayCheck(0, 0) != storyRoomCount;
+            bRunning = recrusiveWayCheck(0, 0) != storyRoomCount && checkWithoutKeys(0, 0) != storyRoomCount;
         }
     }
 
     private int recrusiveWayCheck(int x, int y)
     {
+        if (x < 0 || y < 0 || x >= width || y >= height)
+        {
+            return 0;
+        }
+
+        if (rooms[x][y].isResearved() ||
+                !rooms[x][y].getName().equals("Tür"))
+        {
+            return 0;
+        }
+
+        rooms[x][y].setResearved(true);
+
+        int found = 0;
+
+        found += recrusiveWayCheck(x + 1, y);
+        found += recrusiveWayCheck(x - 1, y);
+        found += recrusiveWayCheck(x, y + 1);
+        found += recrusiveWayCheck(x, y - 1);
+
+        if (rooms[x][y].getType() == 5)
+        {
+            ++found;
+        }
+
+        return found;
+    }
+
+    private int checkWithoutKeys(int x, int y){
         if (x < 0 || y < 0 || x >= width || y >= height)
         {
             return 0;
@@ -229,7 +258,7 @@ public class Main {
         found += recrusiveWayCheck(x, y + 1);
         found += recrusiveWayCheck(x, y - 1);
 
-        if (rooms[x][y].getType() == 5)
+        if (rooms[x][y].getType() == 8)
         {
             ++found;
         }
