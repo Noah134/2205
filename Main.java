@@ -1,8 +1,14 @@
 import java.awt.*;
+import java.awt.image.AreaAveragingScaleFilter;
 import java.io.Console;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Function;
+
+// Test
 
 public class Main {
 
@@ -16,8 +22,6 @@ public class Main {
     Room[][] rooms = new Room[width+1][height+1];
 
     private Player player = new Player();
-
-    private int wall_damage;
 
     private void ini()
     {
@@ -132,9 +136,10 @@ public class Main {
             }
             else if (rco == 1)
             {
-                for (int[] keyRoom : crooms)
+                for (int i = 0; i < crooms.length; ++i)
                 {
-                    rooms[keyRoom[0]][keyRoom[1]] = new Room(8, player);
+                    rooms[ crooms[i][0] ][ crooms[i][1] ] = new Room(8, player);
+                    rooms[ crooms[i][0] ][ crooms[i][1] ].KEYBYTE = (byte) Math.pow(2, i);
                 }
             }
         }
@@ -182,7 +187,8 @@ public class Main {
             for (Room[] roomArray : rooms) for (Room room : roomArray)
             {
                 if (room.getType() != 7 &&
-                        room.getType() != 5)
+                    room.getType() != 5 &&
+                    room.getType() != 8)
                 {
                     rand = Math.abs(random.nextInt(possibilitiesSum));
 
@@ -203,65 +209,54 @@ public class Main {
                 }
             }
 
-            bRunning = recrusiveWayCheck(0, 0) != storyRoomCount && checkWithoutKeys(0, 0) != storyRoomCount;
+            bRunning = recrusiveWayCheck(0, 0, 0, (byte) 0) != storyRoomCount;
         }
     }
 
-    private int recrusiveWayCheck(int x, int y)
-    {
-        if (x < 0 || y < 0 || x >= width || y >= height)
+    private int recrusiveWayCheck(int x, int y, int MAXBEFORE, byte TKEYBYTE){
+        if (x < 0 || y < 0 || x >= width || y >= height ||
+            !rooms[x][y].getName().equals("Tür"))
         {
             return 0;
         }
 
-        if (rooms[x][y].isResearved() ||
-                !rooms[x][y].getName().equals("Tür"))
+        if (rooms[x][y].isResearved() &&
+            rooms[x][y].getMAXKEYSHERE() >= MAXBEFORE)
         {
             return 0;
         }
 
         rooms[x][y].setResearved(true);
 
-        int found = 0;
-
-        found += recrusiveWayCheck(x + 1, y);
-        found += recrusiveWayCheck(x - 1, y);
-        found += recrusiveWayCheck(x, y + 1);
-        found += recrusiveWayCheck(x, y - 1);
-
-        if (rooms[x][y].getType() == 5)
+        if (rooms[x][y].getType() == 8 &&
+           (rooms[x][y].KEYBYTE & TKEYBYTE) == 0)
         {
-            ++found;
+            ++MAXBEFORE;
+
+            TKEYBYTE |= rooms[x][y].KEYBYTE;
         }
 
-        return found;
-    }
-
-    private int checkWithoutKeys(int x, int y){
-        if (x < 0 || y < 0 || x >= width || y >= height)
-        {
-            return 0;
-        }
-
-        if (rooms[x][y].isResearved() ||
-                !rooms[x][y].getName().equals("Tür") || rooms[x][y].isLocked())
-        {
-            return 0;
-        }
-
-        rooms[x][y].setResearved(true);
+        rooms[x][y].setMAXKEYSHERE(MAXBEFORE);
 
         int found = 0;
-
-        found += recrusiveWayCheck(x + 1, y);
-        found += recrusiveWayCheck(x - 1, y);
-        found += recrusiveWayCheck(x, y + 1);
-        found += recrusiveWayCheck(x, y - 1);
-
-        if (rooms[x][y].getType() == 8)
+        if (x != 0 && y != 0 &&
+            rooms[x][y].getType() == 5)
         {
-            ++found;
+            if (MAXBEFORE > 0)
+            {
+                --MAXBEFORE;
+                ++found;
+            }
+            else
+            {
+                return 0;
+            }
         }
+
+        found += recrusiveWayCheck(x + 1, y, MAXBEFORE, TKEYBYTE);
+        found += recrusiveWayCheck(x - 1, y, MAXBEFORE, TKEYBYTE);
+        found += recrusiveWayCheck(x, y + 1, MAXBEFORE, TKEYBYTE);
+        found += recrusiveWayCheck(x, y - 1, MAXBEFORE, TKEYBYTE);
 
         return found;
     }
@@ -308,48 +303,13 @@ public class Main {
         }
 
         Event.printText(s);
-        player.setHealth( player.getHealth() - wall_damage );
+        player.setHealth( player.getHealth() - 5 );
     }
 
     private Main(){
-        ini();
-
         Scanner s = new Scanner(System.in);
 
-        Event.printText("Willkommen bei 2 2 0 5. Einem auf Text basiertem Open-World-Game.\n" +
-        "Wähle einen Schwierigkeitsgrad:\n" +
-        "[1] EINFACH: Du startest mit viel Sauerstoff, Monster können gemütlich besiegt werden und du kriegst keinen Schaden wenn du gegen Wände läufst.\n" +
-        "[2] NORMAL: Du startest mit genug Sauerstoff, Monster können relativ einfach besiegt werden und du kriegst etwas Schaden wenn du gegen Wände läufst.\n" +
-        "[3] SCHWER: Du startest mit einem knappen Vorrat an Sauerstoff, musst dich anstrengen um Monster zu besiegen und du verletzt dich stark, wenn du gegen eine Wand läufst.");
-        Event.printText("Wie möchtest du spielen? [1|2|3] ", 30, false);
-
-        String difficulty = s.nextLine();
-
-        switch (difficulty){
-            case "1":
-                player.setOxygen(1500);
-                Event.maxReactionTime = 2000;
-                wall_damage = 0;
-                break;
-            case "2":
-                player.setOxygen(1000);
-                Event.maxReactionTime = 1500;
-                wall_damage = 5;
-                break;
-            case "3":
-                player.setOxygen(750);
-                Event.maxReactionTime = 1000;
-                wall_damage = 40;
-                break;
-            default:
-                player.setOxygen(1000);
-                Event.maxReactionTime = 1500;
-                wall_damage = 5;
-                break;
-        }
-
-        Event.cls(false);
-
+        ini();
         rooms[0][0].getEvent().execute();
 
         Event.printText("Du kannst dich ab sofort frei auf der Map bewegen. Und Übrigens: Wände sind nicht immer Wände ;)");
@@ -364,7 +324,7 @@ public class Main {
 
             int x, y;
             String input;
-            Event.cls(false);
+            Event.cls();
             System.out.println("Aktueller Sauerstoffgehalt: " + player.getOxygen());
             printRooms(player);
 
