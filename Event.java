@@ -11,6 +11,12 @@ public class Event {
     private boolean executed;
     private String roomID;
 
+    public void setType(int type)
+    {
+        this.room_type = type;
+        this.isVoid = type == 0;
+    }
+
     Event(int room_type, Player player, String roomID){
         this.isVoid = room_type == 0;
         this.room_type = room_type;
@@ -556,8 +562,23 @@ public class Event {
     void secret() {
         printText("Du hast einen geheimen Raum gefunden!");
     }
+
+    // Sum of all events minus 'NOTHING'
+    final int passiveSumMP = 1000;
+    // Probability, ID
+    final int[][] passiveEvents =
+            {
+                    { 1,  0 }, // INSTANT LOSE
+                    { 40, 1 }, // LUCK
+                    { 10, 2 }, // VERY GOOD LUCK
+                    { 40, 3 }, // BAD LUCK
+                    { 10, 4 }, // VERY BAD LUCK
+                    { 40, 5 }, // OXYGEN LEAK
+                    { 50, 6 } // MONEY ON THE GROUND
+            };
     void passive(){
         printText("Du bist in einem scheinbar leeren Raum.");
+
         for (Safe safe : Main.safes) {
             if (safe.isGenerated() && safe.getCodeRoomId().equals(roomID)) {
                 printText("Möchtest du den Zettel nochmal genauer anschauen?");
@@ -581,16 +602,98 @@ public class Event {
                 break;
             }
         }
-        int chance = ThreadLocalRandom.current().nextInt(0,100);
-        if(chance == 99){
-            printText("Seltsam. Was war das?");
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+
+        int event = -1;
+        int chance = ThreadLocalRandom.current().nextInt(0, passiveSumMP);
+        int probability = 0;
+        for (int[] passiveEvent : passiveEvents)
+        {
+            if (chance <= (probability += passiveEvent[0]))
+            {
+                event = passiveEvent[1];
+                break;
             }
-            player.setLuck(player.getLuck() * 3);
-            printText("Dein Glück hat sich erhöht!");
+        }
+
+        switch (event)
+        {
+            case 0: // INSTANT LOSE
+                printText("Du bist ganz erschöpft und ruhst dich aus.");
+                printText("Als du Eingeschlafen bist kammen Typhonen griefen dich an.");
+                printText("Du hattest keine chance mehr dich zu wehren.");
+                printText("GAME OVER");
+
+                player.setHealth(0);
+
+                break;
+            case 1: // LUCK
+                printText("Dich erfüllt ein gutes gefühl.");
+                printText("Dein Glück wurde erhöht");
+
+                player.setLuck(player.getLuck() + 10);
+
+                break;
+            case 2: // VERY GOOD LUCK
+                printText("Es ist als ob heute dein Glückstag wäre.");
+                printText("Dein Glück wurde stark erhöht");
+
+                player.setLuck(player.getLuck() * 10);
+
+                break;
+            case 3: // BAD LUCK
+                printText("Du fühlst dich nicht gut.");
+                printText("Dein Glück wurde gesenkt.");
+
+                player.setLuck(player.getLuck() - 10);
+                if (player.getLuck() < 0 )
+                {
+                    player.setLuck(0);
+                }
+
+                break;
+            case 4: // VERY BAD LUCK
+                printText("VERY BAD LUCK // Dieser Text Muss Noch Geändert werden !!!");
+                printText("Dein Glück sogut wie verschwunden");
+
+                player.setLuck(0);
+
+                break;
+            case 5: // OXYGEN LEAK
+                printText("Du hörst ein zischen, dein Sauerstofftank hat ein Leak!");
+                printText("Du schaffst es zu schliesen, aber es ist warscheinlich einiges entwischen.");
+
+                int ox = player.getOxygen();
+
+                ox *= 2;
+                ox /= 3;
+
+                player.setOxygen(ox);
+
+                break;
+            case 6: // MONEY ON THE GROUND
+                printText("Am boden liegt Geld, willst du es aufheben?");
+
+                if (new Scanner(System.in).nextLine().toLowerCase(Locale.GERMAN).contains("ja"))
+                {
+                    int money = ThreadLocalRandom.current().nextInt(10, 100);
+
+                    printText("Du hebst das Geld auf.");
+                    printText("Es sind " + money + " münzen!");
+                    printText("Du hast in der Zeit jedoch einiges an Sauerstoff verloren.");
+
+                    player.setMoney( player.getMoney() + money);
+                    player.setOxygen( player.getOxygen() + 10 );
+
+                    if (player.getOxygen() < 0)
+                    {
+                        player.setOxygen(0);
+                    }
+                }
+                else {
+                    printText("Du entscheidest dich es zu ignorieren und gehst weiter.");
+                }
+
+                break;
         }
     }
 
