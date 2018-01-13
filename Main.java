@@ -262,6 +262,27 @@ public class Main {
         return found;
     }
 
+    private void printMap(Player p){
+        boolean shown = false;
+        System.out.println("MAP | S = Spieler ; X = Ziel ; M = Mauer");
+        for(int i = height; i >= 0; i--){
+            for(int j = width; j >= 0; j--){
+                if(i == p.getPos_x() && j == p.getPos_y()){
+                    System.out.print("S");
+                } else if(rooms[i][j].getType() == 5 && !shown){
+                    System.out.print("X");
+                    shown = true;
+                } else if(rooms[i][j].getType() == 0){
+                    System.out.print("M");
+                } else {
+                    System.out.print(" ");
+                }
+                System.out.print(" ");
+            }
+            System.out.println();
+        }
+    }
+
     private void printRooms(Player p){
         int x = p.getPos_x();
         int y = p.getPos_y();
@@ -279,7 +300,7 @@ public class Main {
             rooms[x][y].setLocked(false);
             Event.printText("Du konntest die Tür mit dem Schlüssel öffnen, jedoch ist dieser leider abgebrochen und somit nicht mehr verwendbar.");
         }
-        return (x >= 0 && x <= width) && (y >= 0 && y <= height) && rooms[x][y].getType() != 0;
+        return x >= 0 && x <= width && y >= 0 && y <= height && rooms[x][y].getType() != 0;
     }
 
     private void movementError(){
@@ -320,12 +341,13 @@ public class Main {
         Event.printText("Wie möchtest du spielen? [1|2|3] ", 30, false);
 
         String difficulty = s.nextLine();
-
+        boolean printMap = false;
         switch (difficulty){
             case "1":
                 player.setOxygen(1500);
                 Event.maxReactionTime = 2000;
                 wall_damage = 0;
+                printMap = true;
                 break;
             case "2":
                 player.setOxygen(1000);
@@ -346,7 +368,7 @@ public class Main {
 
         Event.cls(false);
 
-        rooms[0][0].getEvent().execute();
+        //rooms[0][0].getEvent().execute();
 
         Event.printText("Du kannst dich ab sofort frei auf der Map bewegen. Und Übrigens: Wände sind nicht immer Wände ;)");
 
@@ -361,6 +383,7 @@ public class Main {
             int x, y;
             String input;
             Event.cls(false);
+            if(printMap) printMap(player);
             System.out.println("Aktueller Sauerstoffgehalt: " + player.getOxygen());
             printRooms(player);
 
