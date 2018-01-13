@@ -44,14 +44,14 @@ public class Main {
 
             // Check
             bRunning = false;
-        BEXIT:
+            BEXIT:
             for (int topPos = 0; topPos < srooms.length; ++topPos)
                 for (int botPos = 0; botPos < srooms.length; ++botPos)
                 {
                     if (topPos != botPos)
                         if (Math.abs(srooms[topPos][0] - srooms[botPos][0]) +
-                            Math.abs(srooms[topPos][1] - srooms[botPos][1]) <
-                            (storyRoomCount * 4) / (width * (height / width)))
+                                Math.abs(srooms[topPos][1] - srooms[botPos][1]) <
+                                (storyRoomCount * 4) / (width * (height / width)))
                         {
                             bRunning = true;
                             break BEXIT;
@@ -149,7 +149,7 @@ public class Main {
             }
         }
 
-         /**
+        /**
 
          0 = wall
          1 = safe
@@ -166,14 +166,14 @@ public class Main {
         // possibilitiesSum HAS TO BE THE SUM OF ALL FIRST VALUES FROM possibilities
         int possibilitiesSum = 1000;
         int[][] possibilities =
-        {
-            {300, 0}, // WALL
-            {100, 1}, // SAFE
-            {150, 2}, // FIGHT
-            {350, 3}, // PASSIVE
-            {60,  4}, // TREASURE
-            {40,  6}, // SHOP
-        };
+                {
+                        {300, 0}, // WALL
+                        {100, 1}, // SAFE
+                        {150, 2}, // FIGHT
+                        {350, 3}, // PASSIVE
+                        {60,  4}, // TREASURE
+                        {40,  6}, // SHOP
+                };
 
         bRunning = true;
         while (bRunning)
@@ -215,7 +215,7 @@ public class Main {
         }
 
         if (rooms[x][y].isResearved() ||
-           !rooms[x][y].getName().equals("Tür"))
+                !rooms[x][y].getName().equals("Tür") || rooms[x][y].isLocked())
         {
             return 0;
         }
@@ -247,33 +247,34 @@ public class Main {
     }
 
     private boolean check(int x, int y) {
+        if(rooms[x][y].getType() == 5 && player.getKeys() <= 0 && rooms[x][y].isLocked()){
+            Event.printText("Diese Tür ist verschlossen. Finde zunächst einen passenden Schlüssel um diese zu öffnen.");
+            return false;
+        } else if(rooms[x][y].getType() == 5 && player.getKeys() > 0 && rooms[x][y].isLocked()){
+            rooms[x][y].setLocked(false);
+            Event.printText("Du konntest die Tür mit dem Schlüssel öffnen, jedoch ist dieser leider abgebrochen und somit nicht mehr verwendbar.");
+        }
         return (x >= 0 && x <= width) && (y >= 0 && y <= height) && rooms[x][y].getType() != 0;
     }
 
     private void movementError(){
         Random r = new Random();
         String s = null;
-        switch (r.nextInt(7)){
+        switch (r.nextInt(5)){
             case 0:
-                s = "Autsch! Du bist gegen eine Wand gelaufen!";
-                break;
-            case 1:
                 s = "Nein! Das geht leider nicht..";
                 break;
-            case 2:
+            case 1:
                 s = "Hier geht es leider nicht lang..";
                 break;
-            case 3:
+            case 2:
                 s = "Schade! Ich dachte schon hier kann man lang gehen.";
                 break;
-            case 4:
+            case 3:
                 s = "Hmm.. Hier scheint nichts zu sein.";
                 break;
-            case 5:
+            case 4:
                 s = "Better luck next time!";
-                break;
-            case 6:
-                s = "Nur eine normale Wand.";
                 break;
         }
 
@@ -286,7 +287,7 @@ public class Main {
 
         Scanner s = new Scanner(System.in);
 
-        // rooms[0][0].getEvent().execute();
+        rooms[0][0].getEvent().execute();
 
         Event.printText("Du kannst dich ab sofort frei auf der Map bewegen. Und Übrigens: Wände sind nicht immer Wände ;)");
 

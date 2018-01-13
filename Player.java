@@ -4,7 +4,8 @@ public class Player {
     private int luck = 1,
             money = 0,
             health = 100,
-            oxygen = 1000;
+            oxygen = 1000,
+            keys = 0;
     private boolean weapon = false;
     private boolean armor = false;
     private int story_chapter;
@@ -88,5 +89,13 @@ public class Player {
 
     public void setDecision(boolean decision) {
         this.decision = decision;
+    }
+
+    public int getKeys() {
+        return keys;
+    }
+
+    public void setKeys(int keys) {
+        this.keys = keys;
     }
 }

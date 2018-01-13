@@ -6,6 +6,7 @@ public class Room {
     private String name;
     private Event event;
     private String id;
+    private boolean locked;
 
     public boolean isResearved()
     {
@@ -21,9 +22,8 @@ public class Room {
 
     Room(int type, Player player){
         this.event = new Event(type, player, id);
-
+        locked = type == 5;
         setType(type);
-
         this.id = UUID.randomUUID().toString();
         if(type == 1){
             Main.safes.add(new Safe(id));
@@ -45,7 +45,6 @@ public class Room {
     public void setType(int type) {
         this.type = type;
         this.event.setType(type);
-
         if(type == 0 || type == 7) {
             name = "Wand";
         } else {
@@ -55,5 +54,13 @@ public class Room {
 
     public String getId() {
         return id;
+    }
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
     }
 }

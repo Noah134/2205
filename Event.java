@@ -58,6 +58,8 @@ public class Event {
                 case 7:
                     if(!executed) secret();
                     break;
+                case 8:
+                    if(!executed) key();
             }
             executed = true;
         }
@@ -652,7 +654,7 @@ public class Event {
 
                 break;
             case 4: // VERY BAD LUCK
-                printText("VERY BAD LUCK // Dieser Text Muss Noch Geändert werden !!!");
+                printText("Es hängt ein umgedrehtes Kreuz an der Wand!!!");
                 printText("Dein Glück sogut wie verschwunden");
 
                 player.setLuck(0);
@@ -664,7 +666,7 @@ public class Event {
 
                 int ox = player.getOxygen();
 
-                ox *= 2;
+                ox *= 2.5;
                 ox /= 3;
 
                 player.setOxygen(ox);
@@ -695,6 +697,11 @@ public class Event {
 
                 break;
         }
+    }
+
+    void key(){
+        printText("Du hast hier einen Master-Key gefunden. Damit kannst du jede verschlossene Tür öffnen!");
+        player.setKeys(player.getKeys() + 1);
     }
 
     public static void cls(){
