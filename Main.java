@@ -318,9 +318,9 @@ public class Main {
 
         Event.printText("Willkommen bei 2 2 0 5. Einem auf Text basiertem Open-World-Game.\n" +
         "Wähle einen Schwierigkeitsgrad:\n" +
-        "\t[1] EINFACH: Du startest mit viel Sauerstoff, Monster können gemütlich besiegt werden und du kriegst keinen Schaden wenn gegen Wände läufst.\n" +
-        "\t[2] NORMAL: Du startest mit genug Sauerstoff, Monster können relativ einfach besiegt werden und du kriegst etwas Schaden wenn du gegen Wände läufst.\n" +
-        "\t[3] SCHWER: Du startest mit einem knappen Vorrat an Sauerstoff, musst dich anstrengen um Monster zu besiegen und du verletzt dich stark, wenn du gegen eine Wand läufst.");
+        "[1] EINFACH: Du startest mit viel Sauerstoff, Monster können gemütlich besiegt werden und du kriegst keinen Schaden wenn du gegen Wände läufst.\n" +
+        "[2] NORMAL: Du startest mit genug Sauerstoff, Monster können relativ einfach besiegt werden und du kriegst etwas Schaden wenn du gegen Wände läufst.\n" +
+        "[3] SCHWER: Du startest mit einem knappen Vorrat an Sauerstoff, musst dich anstrengen um Monster zu besiegen und du verletzt dich stark, wenn du gegen eine Wand läufst.");
         Event.printText("Wie möchtest du spielen? [1|2|3] ", 30, false);
 
         String difficulty = s.nextLine();
