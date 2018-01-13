@@ -286,7 +286,7 @@ public class Main {
 
         Scanner s = new Scanner(System.in);
 
-        rooms[0][0].getEvent().execute();
+        // rooms[0][0].getEvent().execute();
 
         Event.printText("Du kannst dich ab sofort frei auf der Map bewegen. Und Übrigens: Wände sind nicht immer Wände ;)");
 
@@ -347,7 +347,6 @@ public class Main {
                 System.out.println("Das habe ich nicht verstanden..");
                 continue;
             }
-            
             player.setOxygen(player.getOxygen() - 10);
             rooms[player.getPos_x()][player.getPos_y()].getEvent().execute();
         }
