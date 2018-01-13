@@ -1,6 +1,10 @@
+import java.awt.*;
 import java.awt.image.AreaAveragingScaleFilter;
+import java.io.Console;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
@@ -383,6 +387,17 @@ public class Main {
     }
 
     public static void main(String[] args){
+        if(System.getProperty("os.name").startsWith("Windows")) {
+            Console console = System.console();
+            if (console == null && !GraphicsEnvironment.isHeadless()) {
+                String filename = Main.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(6);
+                try {
+                    Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start", "cmd", "/k", "java -jar \"" + filename + "\""});
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
         new Main();
     }
 }
