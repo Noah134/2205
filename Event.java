@@ -713,9 +713,6 @@ public class Event {
                 e.printStackTrace();
             }
         }
-        try {
-            Thread.sleep(1500);
-        } catch (InterruptedException e) {}
         for (int i = 0; i < 50; ++i) System.out.println();
     }
     public static void printText(String s){
