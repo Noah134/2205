@@ -1,12 +1,26 @@
 import java.util.UUID;
 
 public class Room {
+    // PLEASE IGNORE
+    public byte KEYBYTE = 0;
 
     private int type;
     private String name;
     private Event event;
     private String id;
     private boolean locked;
+
+    public int getMAXKEYSHERE()
+    {
+        return MAXKEYSHERE;
+    }
+
+    public void setMAXKEYSHERE(int MAXKEYSHERE)
+    {
+        this.MAXKEYSHERE = MAXKEYSHERE;
+    }
+
+    private int MAXKEYSHERE = 0;
 
     public boolean isResearved()
     {
