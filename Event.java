@@ -131,7 +131,7 @@ public class Event {
                             printText("Du konntest dem Typhon schaden!");
                             charMinigame();
                             printText("Mit dem Deaktivierungscode des Raumanzuges kannst du den Typhon entgültig eliminieren");
-                            cls();
+                            cls(false);
                             printText("Bitte hier eingeben: ");
                             if(new Scanner(System.in).nextLine().equals(String.valueOf(number))){
                                 printText("Du hast den Typhon getötet!");
@@ -348,7 +348,7 @@ public class Event {
                             "auf der Talos-1 Sauerstoff Lecks gibt du ziehst dir einen Raumanzug an dessen Sauerstoff-Versorgung noch 75% beträgt. Ebenfalls nimmst du vorerst als temporäre Bewaffnung eine Rohrzange die auf dem Boden zwischen den Trümmern herum lag.\n" +
                             "Der Raumanzug gibt ebenfalls Informationen über deinen Gesundheitlichen Status aus:\n" +
                             "Gesundheit = 100% | Krankheiten = Keine\n\n");
-                    cls();
+                    cls(true);
                     printText("Schwarze Flächen an der Wand, alles zertrümmert, Sauerstoff Lecks. Hier ist nicht wirklich von Interesse für dich, das einzige was dir Sorgen macht sind diese Schwarzen Flecken.\n" +
                             "Diese Flecken sehen dem Gewebe der Typhons sehr ähnlich. Überall wo die Typhen hingehen hinterlassen sie so welche Flecken. Es macht dir Sorgen das sie hier im zerstörten Raum auch aufgetaucht sind.\n" +
                             "Die Typhons sind tatsächlich ausgebrochen. Hinter dir und im ganzen Raum schließen sich die Türen wegen einer Warnmeldung, die Technologie auf der Raumstation scheint auch schon beschädigt zu sein.");
@@ -704,7 +704,15 @@ public class Event {
         player.setKeys(player.getKeys() + 1);
     }
 
-    public static void cls(){
+    public static void cls(boolean enter){
+        if(enter){
+            try {
+                printText("Drücke ENTER um fortzufahren..", 30, false);
+                System.in.read();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         try {
             Thread.sleep(1500);
         } catch (InterruptedException e) {}
