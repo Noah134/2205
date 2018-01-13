@@ -1,14 +1,8 @@
 import java.awt.*;
-import java.awt.image.AreaAveragingScaleFilter;
 import java.io.Console;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Function;
-
-// Test
 
 public class Main {
 
@@ -22,6 +16,8 @@ public class Main {
     Room[][] rooms = new Room[width+1][height+1];
 
     private Player player = new Player();
+
+    private int wall_damage;
 
     private void ini()
     {
@@ -312,13 +308,47 @@ public class Main {
         }
 
         Event.printText(s);
-        player.setHealth( player.getHealth() - 5 );
+        player.setHealth( player.getHealth() - wall_damage );
     }
 
     private Main(){
         ini();
 
         Scanner s = new Scanner(System.in);
+
+        Event.printText("Willkommen bei 2 2 0 5. Einem auf Text basiertem Open-World-Game.\n" +
+        "Wähle einen Schwierigkeitsgrad:\n" +
+        "\t[1] EINFACH: Du startest mit viel Sauerstoff, Monster können gemütlich besiegt werden und du kriegst keinen Schaden wenn gegen Wände läufst.\n" +
+        "\t[2] NORMAL: Du startest mit genug Sauerstoff, Monster können relativ einfach besiegt werden und du kriegst etwas Schaden wenn du gegen Wände läufst.\n" +
+        "\t[3] SCHWER: Du startest mit einem knappen Vorrat an Sauerstoff, musst dich anstrengen um Monster zu besiegen und du verletzt dich stark, wenn du gegen eine Wand läufst.");
+        Event.printText("Wie möchtest du spielen? [1|2|3] ", 30, false);
+
+        String difficulty = s.nextLine();
+
+        switch (difficulty){
+            case "1":
+                player.setOxygen(1500);
+                Event.maxReactionTime = 2000;
+                wall_damage = 0;
+                break;
+            case "2":
+                player.setOxygen(1000);
+                Event.maxReactionTime = 1500;
+                wall_damage = 5;
+                break;
+            case "3":
+                player.setOxygen(750);
+                Event.maxReactionTime = 1000;
+                wall_damage = 40;
+                break;
+            default:
+                player.setOxygen(1000);
+                Event.maxReactionTime = 1500;
+                wall_damage = 5;
+                break;
+        }
+
+        Event.cls(false);
 
         rooms[0][0].getEvent().execute();
 
@@ -334,7 +364,7 @@ public class Main {
 
             int x, y;
             String input;
-            Event.cls();
+            Event.cls(false);
             System.out.println("Aktueller Sauerstoffgehalt: " + player.getOxygen());
             printRooms(player);
 

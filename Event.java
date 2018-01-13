@@ -10,6 +10,7 @@ public class Event {
     private Player player;
     private boolean executed;
     private String roomID;
+    public static int maxReactionTime = 1500;
 
     public void setType(int type)
     {
@@ -65,18 +66,6 @@ public class Event {
         }
     }
 
-    void charMinigame() {
-        boolean correct = false;
-        while (!correct){
-            String key1 = String.valueOf((char) ThreadLocalRandom.current().nextInt(97,123));
-            String key2 = String.valueOf((char) ThreadLocalRandom.current().nextInt(97,123));
-            String key3 = String.valueOf((char) ThreadLocalRandom.current().nextInt(97,123));
-            System.out.print(key1 + " " + key2 + "" + key3);
-            correct = key1.equals(key2) && key2.equals(key3);
-        }
-        System.out.println();
-    }
-
     void typhon(int n, int ms){
         printText("ACHTUNG! Du befindest dich in einem Raum mit einem Typhon!");
         for (int i = 0; i < n;){
@@ -112,29 +101,40 @@ public class Event {
         player.setOxygen(player.getOxygen() - 20);
         int enemyType = ThreadLocalRandom.current().nextInt(0,100);
         if(enemyType >= 0 && enemyType <= 70){//Typhon
-            typhon(3, 1500);
+            typhon(3, maxReactionTime);
         } else if(enemyType > 70 && enemyType <= 90){//Typhone mit Raumanzug
             printText("ACHTUNG! Du befindest dich in einem Raum mit einem Typhon mit Raumanzug!");
-                int number = ThreadLocalRandom.current().nextInt(1000,100000);
+            boolean fighting = true;
+            while (fighting) {
+                int number = ThreadLocalRandom.current().nextInt(1000, 100000);
                 printText("Merke dir folgenden Deaktivierungscode: " + number);
                 printText("");
-                char key = (char) ThreadLocalRandom.current().nextInt(97,123);
+                char key = (char) ThreadLocalRandom.current().nextInt(97, 123);
                 char capKey = (char) (key - 32);
 
                 printText("Drücke schnell " + key);
                 try {
                     long t1 = System.currentTimeMillis();
                     char input = (char) RawConsoleInput.read(true);
-                    if(input == key || input == capKey){
+                    if (input == key || input == capKey) {
                         long t2 = System.currentTimeMillis();
-                        if((t2 - t1) < 1500){
+                        if ((t2 - t1) < maxReactionTime) {
                             printText("Du konntest dem Typhon schaden!");
-                            charMinigame();
+                            boolean correct = false;
+                            while (!correct){
+                                String key1 = String.valueOf((char) ThreadLocalRandom.current().nextInt(97,123));
+                                String key2 = String.valueOf((char) ThreadLocalRandom.current().nextInt(97,123));
+                                String key3 = String.valueOf((char) ThreadLocalRandom.current().nextInt(97,123));
+                                System.out.print(key1 + " " + key2 + "" + key3);
+                                correct = key1.equals(key2) && key2.equals(key3);
+                            }
+                            System.out.println();
                             printText("Mit dem Deaktivierungscode des Raumanzuges kannst du den Typhon entgültig eliminieren");
                             cls(false);
                             printText("Bitte hier eingeben: ");
-                            if(new Scanner(System.in).nextLine().equals(String.valueOf(number))){
+                            if (new Scanner(System.in).nextLine().equals(String.valueOf(number))) {
                                 printText("Du hast den Typhon getötet!");
+                                fighting = false;
                             }
                         } else {
                             player.setHealth(player.getHealth() - 25);
@@ -148,7 +148,7 @@ public class Event {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
+            }
         } else {//Typhone mit Waffe
             printText("Hier befindet sich ein Typhon mit Waffe. Möchtest du fliehen oder kämpfen?");
             Scanner s = new Scanner(System.in);
@@ -342,15 +342,14 @@ public class Event {
                 } else if(input.contains("gehe") && input.contains("schlaf")){
                     printText("Funktioniert nicht! Die Hyperschlaf_Kapsel ist defekt. Wenn du diese Kapsel nicht zum Laufen bekommst oder eine neue funktionierende Kapsel findest könnte es dein Tod bedeuten, da du unmöglich 100 Jahre leben kannst.");
                 } else if(input.contains("aufwecken")){
-                    printText("Dir ist der Fehler Unbekannt. Du möchtest nicht riskieren das der gleiche Fehler auch bei deinen Team Kollegen auftritt und du jemanden mit in deine Situation hinein ziehst.");
+                    printText("Dir ist der Fehler Unbekannt. Du möchtest nicht riskieren, dass der gleiche Fehler auch bei deinen Team Kollegen auftritt und du jemanden mit in deine Situation hinein ziehst.");
                 } else if(input.contains("raus")){
-                    printText("Du entscheidest dich aus dem Hyperschlaf-Raum raus zugehen. Du öffnest die Tür und kannst deinen Augen nicht glauben. Alles verwüstet überall schwarze Spuren an den Wänden wie du sie eigentlich nur aus der Typhon Forschung kennst...sind die Typhon ausgebrochen? Auf einem Informations-Bildschirm erkennst du das es ebenfalls das überall   \n" +
-                            "auf der Talos-1 Sauerstoff Lecks gibt du ziehst dir einen Raumanzug an dessen Sauerstoff-Versorgung noch 75% beträgt. Ebenfalls nimmst du vorerst als temporäre Bewaffnung eine Rohrzange die auf dem Boden zwischen den Trümmern herum lag.\n" +
+                    printText("Du entscheidest dich aus dem Hyperschlaf-Raum raus zugehen. Du öffnest die Tür und kannst deinen Augen nicht glauben. Alles ist verwüstet, überall sind schwarze Spuren an den Wänden, wie du sie eigentlich nur aus der Typhon-Forschung kennst...sind die Typhon ausgebrochen? Auf einem Informationsbildschirm erkennst du, dass es ebenfalls überall auf der Talos-1 Sauerstofflecks gibt. Du ziehst dir einen Raumanzug an dessen Sauerstoffversorgung noch 75% beträgt. Ebenfalls nimmst du vorerst als temporäre Bewaffnung eine Rohrzange die auf dem Boden zwischen den Trümmern herum lag.\n" +
                             "Der Raumanzug gibt ebenfalls Informationen über deinen Gesundheitlichen Status aus:\n" +
                             "Gesundheit = 100% | Krankheiten = Keine\n\n");
                     cls(true);
-                    printText("Schwarze Flächen an der Wand, alles zertrümmert, Sauerstoff Lecks. Hier ist nicht wirklich von Interesse für dich, das einzige was dir Sorgen macht sind diese Schwarzen Flecken.\n" +
-                            "Diese Flecken sehen dem Gewebe der Typhons sehr ähnlich. Überall wo die Typhen hingehen hinterlassen sie so welche Flecken. Es macht dir Sorgen das sie hier im zerstörten Raum auch aufgetaucht sind.\n" +
+                    printText("Schwarze Flächen an der Wand, alles zertrümmert, Sauerstofflecks. Hier ist wirklich nichts von Interesse für dich, das Einzige was dir Sorgen macht sind diese Schwarzen Flecken.\n" +
+                            "Diese Flecken sehen dem Gewebe der Typhons sehr ähnlich. Überall wo die Typhen hingehen, hinterlassen sie solche Flecken. Es macht dir Sorgen das sie hier im zerstörten Raum auch aufgetaucht sind.\n" +
                             "Die Typhons sind tatsächlich ausgebrochen. Hinter dir und im ganzen Raum schließen sich die Türen wegen einer Warnmeldung, die Technologie auf der Raumstation scheint auch schon beschädigt zu sein.");
                     chapter_complete = true;
                 } else {
@@ -358,9 +357,9 @@ public class Event {
                 }
             }
         } else if(chapter == 1){
-            printText("Nachdem du dich durch verschiedenen Räumen der Talos-1 durch gekämpft hast, triffst du auf einen Raum der durch ein Kraftfeld geschützt ist. Zum Glück, verfügst du über einen Sicherheitscode, der Kraftfelder ausschalten kann.\n" +
+            printText("Nachdem du dich durch verschiedene Räumen der Talos-1 durchgekämpft hast, triffst du auf einen Raum der durch ein Kraftfeld geschützt ist. Zum Glück verfügst du über einen Sicherheitscode, der Kraftfelder ausschalten kann.\n" +
                     "Das Kraftfeld ist so etwas wie ein tödliches und dichtes Laserfeld das nichts hindurch lässt.\n" +
-                    "Es wundert dich das du so ein Feld hier vorfindest, normalerweise können die nur manuell von Hand aufgestellt werden, und nicht durch das Sicherheitssystem.\n" +
+                    "Es wundert dich, dass du so ein Feld hier vorfindest, normalerweise können die nur manuell von Hand aufgestellt werden, und nicht durch das Sicherheitssystem.\n" +
                     "Es ist unmöglich durch dieses Feld irgendetwas zu erkennen.");
             boolean chapter_complete = false;
             while(!chapter_complete){
@@ -371,7 +370,7 @@ public class Event {
                 } else if(input.contains("2416") || input.contains("2-4-1-6") || input.contains("2 4 1 6")){
                     printText("Du gibst den Code ein. Das Kraftfeld deaktiviert sich. Du kannst jetzt in den Raum gehen");
                 } else if(input.contains("gehe") || input.contains("raum")){
-                    printText("Du gehst in den Raum. Eine Person! Sie scheint sich selbst in einer Energie-Draht-Falle gefangen zu haben. Das einzige was sie hat ist ein Laptop der vor ihr liegt und eine freie Hand. " +
+                    printText("Du gehst in den Raum. Eine Person! Sie scheint sich selbst in einer Energie-Draht-Falle gefangen zu haben. Das Einzige was sie hat ist ein Laptop der vor ihr liegt und eine freie Hand. " +
                             "Der Raum scheint noch ganz unberührt von der Typhon Katastrophe zu sein. Es befindet sich ebenfalls ein Terminal im Raum... Ob sich damit die Identität der Person herausfinden lässt?");
                     boolean room_complete = false;
                     boolean has_informations = false;
@@ -379,11 +378,10 @@ public class Event {
                         printText("Was möchtest du tun/wissen? ", 30, false);
                         String input_room = Normalizer.normalize(s.nextLine().toLowerCase(Locale.GERMAN), Normalizer.Form.NFKC);
                         if(input_room.contains("person")){
-                            printText("Anhand der Uniform lässt sich erkennen das sie zu den Volontären auf der Talos-1 gehört.\n" +
-                                    "Sie scheint ansprechbar zu sein und anhand eines Terminals und ihrer Volontär ID, \n" +
-                                    "die auf ihrem Anzug erkennbar ist, ist es möglich mehr über sie heraus zu finden.");
+                            printText("Anhand der Uniform lässt sich erkennen, dass sie zu den Volontären auf der Talos-1 gehört.\n" +
+                                    "Sie scheint ansprechbar zu sein und anhand eines Terminals und ihrer Volontär ID, die auf ihrem Anzug erkennbar ist, sollte es möglich sein mehr über sie heraus zu finden.");
                         } else if(input_room.matches("\\s*volont.r\\s*")){
-                            printText("Volontäre, sind Freiwillige die ihren Körper für die Versuche und Experimente auf der Talos-1 zur Verfügung gestellt haben, ...also so etwas wie Laborratten.\n" +
+                            printText("Volontäre, sind Freiwillige die ihren Körper für die Versuche und Experimente auf der Talos-1 zur Verfügung gestellt haben...also so etwas wie Laborratten.\n" +
                                     "Meistens handelt es sich um Strafgefangene die ihr Leben sowieso lebenslänglich im Gefängnis verbracht hätten.");
                         } else if(input_room.contains("id") || input_room.contains("genau")){
                             printText("Auf der Uniform steht die ID: V-010655-37");
@@ -399,20 +397,20 @@ public class Event {
                         } else if(input_room.contains("reden")){
                             if(has_informations){
                                 printText("Olivia: \t\"Ich schätze du weißt schon, anhand meiner Akten, wer ich bin.\n" +
-                                        "\t\tIch wurde ebenfalls in den Hyperschlaf versetzt. Du wunderst dich, wieso ich auch schon wach bin.\nBevor man mich Schlafen lies hatte ich genug Zeit mich in ein anderes Terminal zu hacken und meine Schlafdauer zu verkürzen.\nNur leider ist mein Umgang mit Waffen miserabel und ich habe mich in\n" +
-                                        "\t\teiner dieser Energie-Draht-Fallen selbst gefangen. Ich hatte eigentlich vor, mit einem Shuttle zu fliehen, aber bemerkte schon früh, dass ich die Sicherheitssystem-Software und das Kommunikationssystem\n" +
-                                        "\t\tmit meinen Softwaremanipulationen zerschossen habe und damit eure Forschungssubjekte befreit habe. Ich habe dich ebenfalls aus dem Hyperschlaf geweckt und dir die richtigen Türen geöffnet damit du zu " +
-                                        "\t\tmir kommst und mich befreist. Ich habe den Doktor dieser Raumstation dabei beobachtet mit welchen Code er die Tür zur Krankenstation öffnet und soweit ich weiß, ist der Operationstisch fähig einen Hyperschlaf\n" +
-                                        "\t\tdurchzuführen. Wenn du mich befreist und hilfst zum Shuttle zu kommen und zu fliehen verrate ich dir den Code.\"");
+                                        "Ich wurde ebenfalls in den Hyperschlaf versetzt. Du wunderst dich, wieso ich auch schon wach bin.\nBevor man mich Schlafen lies hatte ich genug Zeit mich in ein anderes Terminal zu hacken und meine Schlafdauer zu verkürzen.\nNur leider ist mein Umgang mit Waffen miserabel und ich habe mich in\n" +
+                                        "einer dieser Energie-Draht-Fallen selbst gefangen. Ich hatte eigentlich vor, mit einem Shuttle zu fliehen, aber bemerkte schon früh, dass ich die Sicherheitssystem-Software und das Kommunikationssystem\n" +
+                                        "mit meinen Softwaremanipulationen zerschossen habe und damit eure Forschungssubjekte befreit habe. Ich habe dich ebenfalls aus dem Hyperschlaf geweckt und dir die richtigen Türen geöffnet damit du zu " +
+                                        "mir kommst und mich befreist. Ich habe den Doktor dieser Raumstation dabei beobachtet mit welchen Code er die Tür zur Krankenstation öffnet und soweit ich weiß, ist der Operationstisch fähig einen Hyperschlaf\n" +
+                                        "durchzuführen. Wenn du mich befreist, mir hilfst zum Shuttle zu kommen und  mir hilfst zu fliehen verrate ich dir den Code.\"");
                                 printText("Olivia Colomar befreien? ", 30, false);
                                 String input_room_decision = s.nextLine().toLowerCase(Locale.GERMAN);
                                 if(input_room_decision.contains("ja")){
                                     player.setDecision(true);
-                                    printText("Du befreist Olivia. Sie bedankt sich sehr und sagt das du es nicht bereuen wirst.\n" +
-                                            "Sie öffnet auf ihrem Laptop einen Karte und berechnet den kürzesten Weg zum Shuttle und öffnet dir die richtigen Türen.\n");
+                                    printText("Du befreist Olivia. Sie bedankt sich sehr und sagt, dass du es nicht bereuen wirst.\n" +
+                                            "Sie öffnet auf ihrem Laptop eine Karte, berechnet den kürzesten Weg zum Shuttle und öffnet dir die richtigen Türen.\n");
                                 } else if(input_room_decision.contains("nein")){
                                     player.setDecision(false);
-                                    printText("Du reißt Olivia ihr Laptop aus der Hand, wirfst ihn gegen eine Wand, nachdem du dir eine Karte über die Raumstation heruntergeladen hast und lässt sie am Boden gefesselt liegen.\n" +
+                                    printText("Du reißt Olivia ihren Laptop aus der Hand, wirfst ihn gegen eine Wand, nachdem du dir eine Karte über die Raumstation heruntergeladen hast und lässt sie am Boden gefesselt liegen.\n" +
                                             "\tDein Neues Ziel: Das Shuttle finden um zur Erde zu fliegen und darüber zu Informieren was hier vor sich geht. Und noch während du den Raum verlässt, hat sie dich auf Spanisch auf 10 verschiedene Arten beleidigt.");
                                 }
                                 room_complete = true;
@@ -420,19 +418,23 @@ public class Event {
                             } else {
                                 printText("Vielleicht solltest du dich lieber erst über sie Informieren...\nDu weißt nicht, wen du vor dir hast.");
                             }
+                        } else {
+                            printText("Das geht leider nicht.. Du kannst aber mehr über die Person, Volontäre oder deren ID erfahren..");
                         }
                     }
+                } else {
+                    printText("Das geht leider nicht.. Achte nochmal darauf was ich gesagt hatte.");
                 }
             }
 
         } else if(chapter == 2){
             if(player.isDecision()) {
                 printText("Ihr seid im Shuttle-Raum angekommen, doch es ist voll mit Typhons und es hat nicht lange gedauert bis sie euch entdeckt haben.");
-                typhon(9, 1500);
+                typhon(9, maxReactionTime);
                 printText("Ihr habt es geschafft! Die meisten Typhons im Shuttle-Raum wurden besiegt. Und die, die noch übrig waren sind vor Angst geflohen.");
             } else {
-                printText("Du bist im Shuttle-Raum angekommen doch drinnen ist ein riesiger Typhon-Phantom, es hat nicht lange gedauert bis er dich bemerkt hat und auf dich zu stürmt. Du konntest den Ansturm noch grade so ausweichen. Es führt kein weg an ihn vorbei du musst kämpfen.");
-                typhon(9, 1200);
+                printText("Du bist im Shuttle-Raum angekommen doch drinnen ist ein riesiger Typhon-Phantom, es hat nicht lange gedauert bis er dich bemerkt hat und auf dich zu stürmt. Du konntest dem Ansturm noch grade so ausweichen. Es führt kein weg an ihm vorbei du musst kämpfen.");
+                typhon(9, maxReactionTime - 200);
                 printText("Du hast es geschafft! Als du den riesigen Typhon-Phantom besiegt hast und er sich vor dir vor schmerzen krümmend in Luft auflöst, fliehen die restlichen Typhons die noch im Raum waren vor angst. Dir steht der Shuttle-Raum jetzt frei zur Verfügung.");
             }
 
@@ -533,6 +535,8 @@ public class Event {
                         } else {
                             printText("Falsche Reihenfolge!");
                         }
+                    } else {
+                        printText("Das geht leider nicht.. Du kannst dich aber umsehen und mehr über einzelne Objekte erfahren.");
                     }
                 }
 
@@ -557,12 +561,22 @@ public class Event {
                                 "Sie haben sich über die letzten 100 Jahre, in den du geschlafen hast, so stark vermehrt, dass sie irgendwann die Raumstation buchstäblich aufgefressen haben samt deinen Team Kollegen.\n" +
                                 "Du hattest die Chance es zu vermeiden, doch hattest die falschen Prioritäten...");
                         Main.game_over = true;
+                    } else if(code_entered) {
+                        printText("Das geht leider nicht.. Du kannst dich aber umsehen oder den Operationstisch als Hyperschlaf-Kapsel verwenden.");
+                    } else {
+                        printText("Das geht leider nicht.. Du musst jetzt den Code eingeben um weiterzukommen.");
                     }
                 }
         }
     }
     void secret() {
         printText("Du hast einen geheimen Raum gefunden!");
+        printText("Du hast hier 3000$, +1000 an Sauerstoff, eine Waffe und eine Rüstung gefunden.");
+        printText("Glückwunsch!");
+        player.setMoney(player.getMoney() + 3000);
+        player.setOxygen(player.getOxygen() + 1000);
+        player.setWeapon(true);
+        player.setArmor(true);
     }
 
     // Sum of all events minus 'NOTHING'
@@ -621,11 +635,11 @@ public class Event {
         {
             case 0: // INSTANT LOSE
                 printText("Du bist ganz erschöpft und ruhst dich aus.");
-                printText("Als du Eingeschlafen bist kammen Typhonen griefen dich an.");
-                printText("Du hattest keine chance mehr dich zu wehren.");
+                printText("Als du Eingeschlafen bist kamen Typhonen und haben dich angegriffen");
+                printText("Du hattest keine Chance mehr dich zu wehren.");
                 printText("GAME OVER");
 
-                player.setHealth(0);
+                Main.game_over = true;
 
                 break;
             case 1: // LUCK
@@ -655,7 +669,7 @@ public class Event {
                 break;
             case 4: // VERY BAD LUCK
                 printText("Es hängt ein umgedrehtes Kreuz an der Wand!!!");
-                printText("Dein Glück sogut wie verschwunden");
+                printText("Dein Glück ist so gut wie verschwunden");
 
                 player.setLuck(0);
 

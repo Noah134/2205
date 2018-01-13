@@ -48,8 +48,8 @@ public class Debug
 
                 return sb.toString();
             }
-            case "disable_oxygen":
-                // Implement
+            case "set_max_oxygen":
+                player.setOxygen(Integer.MAX_VALUE);
                 return null;
             case "toggle_execute":
                 Event e = rooms[player.getPos_x()]
