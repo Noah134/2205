@@ -265,14 +265,15 @@ public class Main {
     private void printMap(Player p){
         boolean shown = false;
         System.out.println("MAP | S = Spieler ; X = Ziel ; M = Mauer");
-        for(int i = height; i >= 0; i--){
-            for(int j = width; j >= 0; j--){
+        for(int j = width; j >= 0; j--){
+            for(int i = 0; i < height; i++){
                 if(i == p.getPos_x() && j == p.getPos_y()){
                     System.out.print("S");
                 } else if(rooms[i][j].getType() == 5 && !shown){
                     System.out.print("X");
                     shown = true;
-                } else if(rooms[i][j].getType() == 0){
+                } else if(rooms[i][j].getType() == 0 ||
+                          rooms[i][j].getType() == 7){
                     System.out.print("M");
                 } else {
                     System.out.print(" ");
@@ -281,6 +282,8 @@ public class Main {
             }
             System.out.println();
         }
+
+        System.out.println();
     }
 
     private void printRooms(Player p){
@@ -333,7 +336,7 @@ public class Main {
 
         ini();
 
-        Event.printText("Willkommen bei 2 2 0 5. Einem auf Text basiertem Open-World-Game.\n" +
+        System.out.println("Willkommen bei 2 2 0 5. Einem auf Text basiertem Open-World-Game.\n" +
                 "Wähle einen Schwierigkeitsgrad:\n" +
                 "[1] EINFACH: Du startest mit viel Sauerstoff, Monster können gemütlich besiegt werden und du kriegst keinen Schaden wenn du gegen Wände läufst.\n" +
                 "[2] NORMAL: Du startest mit genug Sauerstoff, Monster können relativ einfach besiegt werden und du kriegst etwas Schaden wenn du gegen Wände läufst.\n" +
@@ -341,7 +344,7 @@ public class Main {
         Event.printText("Wie möchtest du spielen? [1|2|3] ", 30, false);
 
         String difficulty = s.nextLine();
-        boolean printMap = false;
+        boolean printMap = true;
         switch (difficulty){
             case "1":
                 player.setOxygen(1500);
