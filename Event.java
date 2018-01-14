@@ -217,69 +217,48 @@ public class Event {
             }
         }
     }
+
+    void buy(int price, String name, String plural, int oxygen, int health, int luck, boolean weapon, boolean armor){
+        printText("Gebe eine Stückzahl ein: ", 30, false);
+        int stueckzahl = 1;
+        try {
+            stueckzahl = Integer.parseInt(new Scanner(System.in).nextLine());
+        } catch (Exception e){/*Default Stueckzahl wird verwendet*/}
+        if(stueckzahl < 1) stueckzahl = 1;
+        price *= stueckzahl;
+        if(player.getMoney() >= price){
+            player.setMoney(player.getMoney() - price);
+            player.setOxygen(player.getOxygen() + oxygen);
+            player.setHealth(player.getHealth() + health);
+            player.setLuck(player.getLuck() + luck);
+            player.setWeapon(player.isWeapon() || weapon);
+            player.setArmor(player.isArmor() || armor);
+            printText("Du hast " + stueckzahl + " " + name + (stueckzahl > 1 ? plural : "") + " gekauft.");
+        } else {
+            printText("Du hast nicht genug Münzen!");
+        }
+    }
+
     void shop(){
         printText("Vor dir befindet sich ein Automat.");
         printText("Es gibt hier noch Sauerstoffflaschen, Snacks, Medikamente, Waffen, Glücksbringer und Rüstungen.");
-        printText("Du hast aktuell " + player.getMoney() + "$. Möchtest du etwas kaufen? ", 30, false);
+        printText("Du hast aktuell " + player.getMoney() + " Münzen. Möchtest du etwas kaufen? ", 30, false);
         Scanner s = new Scanner(System.in);
         if(s.nextLine().toLowerCase(Locale.GERMAN).contains("ja")){
             printText("Was darf es denn sein? ", 30, false);
             String input = s.nextLine().toLowerCase(Locale.GERMAN);
-            String nem = "Nicht genug Geld!";
             if(input.contains("sauerstoff")){
-                if(player.getMoney() >= 10) {
-                    player.setMoney(player.getMoney() - 10);
-                    player.setOxygen(player.getOxygen() + 100);
-                } else {
-                    printText(nem);
-                }
+                buy(10, "Sauerstoffflasche", "n", 100, 0, 0, false, false);
             } else if(input.contains("snack")){
-                if(player.getMoney() >= 30){
-                    player.setMoney(player.getMoney() - 30);
-                    if(player.getHealth() <= 100) {
-                        player.setHealth(player.getHealth() + 15);
-                    }
-                } else {
-                    printText(nem);
-                }
+                buy(30, "Snack", "s", 0, 15, 0, false, false);
             } else if(input.contains("med")){
-                if(player.getMoney() >= 70){
-                    player.setMoney(player.getMoney() - 70);
-                    if(player.getHealth() <= 100) {
-                        player.setHealth(player.getHealth() + 48);
-                    }
-                } else {
-                    printText(nem);
-                }
+                buy(70, "Medikament", "e", 0, 48, 0, false, false);
             } else if(input.contains("waffe")){
-                if (!player.isWeapon()){
-                    if(player.getMoney() >= 200){
-                        player.setMoney(player.getMoney() - 200);
-                        player.setWeapon(true);
-                    } else {
-                        printText(nem);
-                    }
-                } else {
-                    printText("Du hast schon eine Waffe!");
-                }
+                buy(200, "Waffe", "n", 0, 0, 0, true, false);
             } else if(input.matches("\\s*gl.ck\\s*")){
-                if(player.getMoney() >= 800){
-                    player.setMoney(player.getMoney() - 800);
-                    player.setLuck(player.getLuck() + 25);
-                } else {
-                    printText(nem);
-                }
+                buy(800, "Glücksbringer", "", 0, 0, 25, false, false);
             } else if(input.contains("\\s*r.stung\\s*")){
-                if(!player.isArmor()) {
-                    if (player.getMoney() >= 1000) {
-                        player.setMoney(player.getMoney() - 1000);
-                        player.setArmor(true);
-                    } else {
-                        printText(nem);
-                    }
-                } else {
-                    printText("Du hast schon eine Rüstung!");
-                }
+                buy(1000, "Rüstung", "en", 0, 0, 0, false, true);
             }
         } else {
             printText("Ok.");
@@ -771,6 +750,12 @@ public class Event {
                 printText("Drücke ENTER um fortzufahren..", 30, false);
                 System.in.read();
             } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }

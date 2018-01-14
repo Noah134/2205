@@ -1,12 +1,8 @@
 import java.awt.*;
-import java.awt.image.AreaAveragingScaleFilter;
 import java.io.Console;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Function;
 
 // Test
 
@@ -210,7 +206,7 @@ public class Main {
                 }
             }
 
-            bRunning = recrusiveWayCheck(0, 0, 0, (byte) 0) != storyRoomCount;
+            bRunning = recrusiveWayCheck(0, 0, 0, (byte) 0) != storyRoomCount && checkWithoutKeys(0, 0) != storyRoomCount;
         }
     }
 
@@ -262,11 +258,42 @@ public class Main {
         return found;
     }
 
+    private int checkWithoutKeys(int x, int y){
+        if (x < 0 || y < 0 || x >= width || y >= height)
+        {
+            return 0;
+        }
+
+        if (rooms[x][y].isResearved() ||
+                !rooms[x][y].getName().equals("Tür") || rooms[x][y].isLocked())
+        {
+            return 0;
+        }
+
+        rooms[x][y].setResearved(true);
+
+        int found = 0;
+
+        found += checkWithoutKeys(x + 1, y);
+        found += checkWithoutKeys(x - 1, y);
+        found += checkWithoutKeys(x, y + 1);
+        found += checkWithoutKeys(x, y - 1);
+
+        if (rooms[x][y].getType() == 8)
+        {
+            ++found;
+        }
+
+        return found;
+    }
+
     private void printMap(Player p){
         boolean shown = false;
-        System.out.println("MAP | O = Aktuelle Position ; X = Ziel ; M = Mauer ; $ = Shop");
+        System.out.println("O = Position / X = Ziel / M = Mauer / $ = Shop");
+        System.out.println("  -----------------------------------------");
         for(int j = width; j >= 0; j--){
-            for(int i = 0; i < height; i++) {
+            System.out.print("| ");
+            for(int i = 0; i <= height; i++) {
                 if (i == p.getPos_x() && j == p.getPos_y()) {
                     System.out.print("O");
                 } else if (rooms[i][j].getType() == 5 && !shown) {
@@ -276,16 +303,15 @@ public class Main {
                         rooms[i][j].getType() == 7) {
                     System.out.print("M");
                 } else if(rooms[i][j].getType() == 6){
-                    System.out.println("$");
+                    System.out.print("$");
                 } else {
                     System.out.print(" ");
                 }
                 System.out.print(" ");
             }
-            System.out.println();
+            System.out.println("|");
         }
-
-        System.out.println();
+        System.out.println("  -----------------------------------------");
     }
 
     private void printRooms(Player p){
@@ -399,7 +425,7 @@ public class Main {
 
         Event.cls(false);
 
-        rooms[0][0].getEvent().execute();
+        //rooms[0][0].getEvent().execute();
 
         Event.printText("Du kannst dich ab sofort frei auf der Map bewegen. Und Übrigens: Wände sind nicht immer Wände ;)");
 
