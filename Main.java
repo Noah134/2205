@@ -264,17 +264,19 @@ public class Main {
 
     private void printMap(Player p){
         boolean shown = false;
-        System.out.println("MAP | S = Spieler ; X = Ziel ; M = Mauer");
+        System.out.println("MAP | O = Aktuelle Position ; X = Ziel ; M = Mauer ; $ = Shop");
         for(int j = width; j >= 0; j--){
-            for(int i = 0; i < height; i++){
-                if(i == p.getPos_x() && j == p.getPos_y()){
-                    System.out.print("S");
-                } else if(rooms[i][j].getType() == 5 && !shown){
+            for(int i = 0; i < height; i++) {
+                if (i == p.getPos_x() && j == p.getPos_y()) {
+                    System.out.print("O");
+                } else if (rooms[i][j].getType() == 5 && !shown) {
                     System.out.print("X");
                     shown = true;
-                } else if(rooms[i][j].getType() == 0 ||
-                          rooms[i][j].getType() == 7){
+                } else if (rooms[i][j].getType() == 0 ||
+                        rooms[i][j].getType() == 7) {
                     System.out.print("M");
+                } else if(rooms[i][j].getType() == 6){
+                    System.out.println("$");
                 } else {
                     System.out.print(" ");
                 }
@@ -293,6 +295,29 @@ public class Main {
                 ", Links eine " + (x > 0 ? rooms[x-1][y].getName() : "Wand") +
                 ", Rechts eine " + (x < width ? rooms[x+1][y].getName() : "Wand") +
                 " und hinter dir eine " + (y > 0 ? rooms[x][y-1].getName() : "Wand") + ".");
+    }
+
+    private void compass(Player p){
+        int storyX = 0, storyY = 0;
+        for(int i = 0; i < height; i++){
+            for(int j = 0; j < width; j++){
+                if(rooms[i][j].getType() == 5){
+                    storyX = i;
+                    storyY = j;
+                }
+            }
+        }
+        System.out.print("Kompass zeigt nach ");
+        if(player.getPos_y() < storyY){
+            System.out.print("NORDEN");
+        } else if(player.getPos_x() < storyX){
+            System.out.print("OSTEN");
+        } else if(player.getPos_y() > storyY){
+            System.out.print("SÜDEN");
+        } else if(player.getPos_x() < storyX){
+            System.out.print("WESTEN");
+        }
+        System.out.println();
     }
 
     private boolean check(int x, int y) {
@@ -338,13 +363,14 @@ public class Main {
 
         System.out.println("Willkommen bei 2 2 0 5. Einem auf Text basiertem Open-World-Game.\n" +
                 "Wähle einen Schwierigkeitsgrad:\n" +
-                "[1] EINFACH: Du startest mit viel Sauerstoff, Monster können gemütlich besiegt werden und du kriegst keinen Schaden wenn du gegen Wände läufst.\n" +
-                "[2] NORMAL: Du startest mit genug Sauerstoff, Monster können relativ einfach besiegt werden und du kriegst etwas Schaden wenn du gegen Wände läufst.\n" +
-                "[3] SCHWER: Du startest mit einem knappen Vorrat an Sauerstoff, musst dich anstrengen um Monster zu besiegen und du verletzt dich stark, wenn du gegen eine Wand läufst.");
+                "[1] EINFACH: Du startest mit viel Sauerstoff, Monster können gemütlich besiegt werden und du hast ein GPS-Gerät um dich zu orientieren.\n" +
+                "[2] NORMAL: Du startest mit genug Sauerstoff, Monster können relativ einfach besiegt werden und du hast einen Kompass um dich zu orientieren.\n" +
+                "[3] SCHWER: Du startest mit einem knappen Vorrat an Sauerstoff und musst dich anstrengen um Monster zu besiegen.\n");
         Event.printText("Wie möchtest du spielen? [1|2|3] ", 30, false);
 
         String difficulty = s.nextLine();
-        boolean printMap = true;
+        boolean printMap = false;
+        boolean displayCompass = false;
         switch (difficulty){
             case "1":
                 player.setOxygen(1500);
@@ -356,6 +382,7 @@ public class Main {
                 player.setOxygen(1000);
                 Event.maxReactionTime = 1500;
                 wall_damage = 5;
+                displayCompass = true;
                 break;
             case "3":
                 player.setOxygen(750);
@@ -366,12 +393,13 @@ public class Main {
                 player.setOxygen(1000);
                 Event.maxReactionTime = 1500;
                 wall_damage = 5;
+                displayCompass = true;
                 break;
         }
 
         Event.cls(false);
 
-        //rooms[0][0].getEvent().execute();
+        rooms[0][0].getEvent().execute();
 
         Event.printText("Du kannst dich ab sofort frei auf der Map bewegen. Und Übrigens: Wände sind nicht immer Wände ;)");
 
@@ -387,6 +415,7 @@ public class Main {
             String input;
             Event.cls(false);
             if(printMap) printMap(player);
+            if(displayCompass) compass(player);
             System.out.println("Aktueller Sauerstoffgehalt: " + player.getOxygen());
             printRooms(player);
 
