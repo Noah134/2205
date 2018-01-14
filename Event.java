@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.IOException;
 import java.text.Normalizer;
 import java.util.Locale;
@@ -138,6 +139,7 @@ public class Event {
     }
 
     void fight(){
+        Main.playSound("sounds/typhon.wav");
         player.setOxygen(player.getOxygen() - 20);
         int enemyType = ThreadLocalRandom.current().nextInt(0,100);
         if(enemyType >= 0 && enemyType <= 70){//Typhon
@@ -227,6 +229,7 @@ public class Event {
         if(stueckzahl < 1) stueckzahl = 1;
         price *= stueckzahl;
         if(player.getMoney() >= price){
+            Main.playSound("sounds/coins.wav");
             player.setMoney(player.getMoney() - price);
             player.setOxygen(player.getOxygen() + oxygen);
             player.setHealth(player.getHealth() + health);
@@ -329,6 +332,7 @@ public class Event {
         if((treasure & 2) != 0 && chanceMoney >= 0 && chanceMoney <= 75){
             int money = 20 * player.getLuck();
             printText("Du hast hier " + money + "$ gefunden!");
+            Main.playSound("sounds/coins.wav");
             player.setMoney(player.getMoney() + money);
         }
 
@@ -343,6 +347,7 @@ public class Event {
         }
     }
     void story(){
+        Main.playSound("sounds/story.wav");
         player.setOxygen(player.getOxygen() - 50);
         int chapter = player.getStory_chapter();
         player.setStory_chapter(chapter + 1);
@@ -720,6 +725,7 @@ public class Event {
                     int money = ThreadLocalRandom.current().nextInt(10, 100);
 
                     printText("Du hebst das Geld auf.");
+                    Main.playSound("sounds/coins.wav");
                     printText("Es sind " + money + " münzen!");
                     printText("Du hast in der Zeit jedoch einiges an Sauerstoff verloren.");
 

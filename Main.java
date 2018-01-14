@@ -1,5 +1,7 @@
+import javax.sound.sampled.*;
 import java.awt.*;
 import java.io.Console;
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
@@ -425,7 +427,7 @@ public class Main {
 
         Event.cls(false);
 
-        //rooms[0][0].getEvent().execute();
+        rooms[0][0].getEvent().execute();
 
         Event.printText("Du kannst dich ab sofort frei auf der Map bewegen. Und Übrigens: Wände sind nicht immer Wände ;)");
 
@@ -490,6 +492,23 @@ public class Main {
             }
             player.setOxygen(player.getOxygen() - 10);
             rooms[player.getPos_x()][player.getPos_y()].getEvent().execute();
+        }
+    }
+
+    public static void playSound(String url) {
+        try {
+            Clip clip = (Clip) AudioSystem.getLine(new Line.Info(Clip.class));
+
+            clip.addLineListener(event -> {
+                if (event.getType() == LineEvent.Type.STOP)
+                    clip.close();
+            });
+
+            clip.open(AudioSystem.getAudioInputStream(Main.class.getResource(url)));
+            clip.start();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
