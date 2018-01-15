@@ -349,10 +349,10 @@ public class Main {
     }
 
     private boolean check(int x, int y) {
-        if(rooms[x][y].getType() == 5 && player.getKeys() <= 0 && rooms[x][y].isLocked()){
+        if(x >= 0 && x <= width && y >= 0 && y <= height && rooms[x][y].getType() == 5 && player.getKeys() <= 0 && rooms[x][y].isLocked()){
             Event.printText("Diese Tür ist verschlossen. Finde zunächst einen passenden Schlüssel um diese zu öffnen.");
             return false;
-        } else if(rooms[x][y].getType() == 5 && player.getKeys() > 0 && rooms[x][y].isLocked()){
+        } else if(x >= 0 && x <= width && y >= 0 && y <= height && rooms[x][y].getType() == 5 && player.getKeys() > 0 && rooms[x][y].isLocked()){
             rooms[x][y].setLocked(false);
             Event.printText("Du konntest die Tür mit dem Schlüssel öffnen, jedoch ist dieser leider abgebrochen und somit nicht mehr verwendbar.");
         }
